@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 情感影响研究</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="chart.min.js"></script>
+</head>
+<body>
+
+  <!-- Language Toggle -->
+  <div class="lang-toggle">
+    <button id="btn-zh" class="lang-btn active" onclick="setLang('zh')">中文</button>
+    <button id="btn-en" class="lang-btn" onclick="setLang('en')">EN</button>
+  </div>
+
+  <!-- Progress Stepper -->
+  <div class="stepper" id="stepper">
+    <div class="step active" data-step="1"><span class="step-dot"></span><span class="step-label" data-i18n="step.info">基本信息</span></div>
+    <div class="step-line"></div>
+    <div class="step" data-step="2"><span class="step-dot"></span><span class="step-label" data-i18n="step.pre">情绪评估</span></div>
+    <div class="step-line"></div>
+    <div class="step" data-step="3"><span class="step-dot"></span><span class="step-label" data-i18n="step.chat">AI 对话</span></div>
+    <div class="step-line"></div>
+    <div class="step" data-step="4"><span class="step-dot"></span><span class="step-label" data-i18n="step.post">情绪评估</span></div>
+    <div class="step-line"></div>
+    <div class="step" data-step="5"><span class="step-dot"></span><span class="step-label" data-i18n="step.feedback">反馈</span></div>
+    <div class="step-line"></div>
+    <div class="step" data-step="6"><span class="step-dot"></span><span class="step-label" data-i18n="step.result">结果</span></div>
+  </div>
+
+  <!-- Screen: Welcome -->
+  <div id="screen-welcome" class="screen active">
+    <div class="card card-wide animate-in">
+      <div class="card-icon">😃</div>
+      <h1 data-i18n="welcome.title">机器对人类的情感影响研究</h1>
+      <div class="card-body">
+        <p data-i18n="welcome.desc">
+          本研究旨在探索人工智能交互对人类短期情绪状态的影响。随着AI技术日益融入日常生活，
+          理解人机对话如何影响我们的情感体验变得尤为重要。在本研究中，您将完成一份简短的情绪评估问卷，
+          随后与AI进行一段自由对话（至少1分钟），对话结束后再次完成情绪评估。
+          通过对比对话前后的情绪变化，我们希望深入了解AI交互对人类情感的潜在作用。
+        </p>
+        <p data-i18n="welcome.time">整个过程大约需要10分钟左右。</p>
+        <div class="tip-box">
+          <p data-i18n="welcome.tip">💡 无需立刻开始！您可以在闲暇、无聊或放松的时候再来参与，选择一个您觉得舒适自在的时间即可。</p>
+        </div>
+        <div class="consent-box">
+          <p data-i18n="welcome.consent">
+            您的参与完全自愿，所有数据将被匿名处理并仅用于学术研究目的。
+            点击下方按钮即表示您已了解研究内容并同意参与。
+          </p>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-lg" onclick="startStudy()" data-i18n="welcome.start">我同意，开始参与</button>
+    </div>
+  </div>
+
+  <!-- Screen: Demographics -->
+  <div id="screen-demographics" class="screen">
+    <div class="card animate-in">
+      <h2 data-i18n="demo.title">基本信息</h2>
+      <p class="card-subtitle" data-i18n="demo.subtitle">请填写以下基本信息，所有数据仅用于研究分析</p>
+      <form id="form-demographics" onsubmit="return false">
+        <div class="form-group">
+          <label for="input-age" data-i18n="demo.age">年龄</label>
+          <input type="number" id="input-age" min="1" max="120" required>
+        </div>
+        <div class="form-group">
+          <label for="input-gender" data-i18n="demo.gender">性别</label>
+          <select id="input-gender" required>
+            <option value="" disabled selected data-i18n="demo.select">请选择</option>
+            <option value="male" data-i18n="demo.male">男</option>
+            <option value="female" data-i18n="demo.female">女</option>
+            <option value="other" data-i18n="demo.other">其他</option>
+            <option value="prefer-not" data-i18n="demo.preferNot">不愿透露</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="submitDemographics()" data-i18n="demo.next">下一步</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Screen: Pre-Survey -->
+  <div id="screen-pre-survey" class="screen">
+    <div class="card card-wide animate-in">
+      <h2 data-i18n="survey.preTitle">情绪评估（对话前）</h2>
+      <p class="card-subtitle" data-i18n="survey.reference">
+        本量表改编自正性负性情绪量表 PANAS（Watson, Clark &amp; Tellegen, 1988）
+      </p>
+      <p class="survey-instructions" data-i18n="survey.instructions">
+        请根据您【此刻】的感受，评估以下每种情绪的强烈程度
+      </p>
+      <div class="scale-legend">
+        <span>1 = <span data-i18n="survey.s1">几乎没有</span></span>
+        <span>2 = <span data-i18n="survey.s2">比较少</span></span>
+        <span>3 = <span data-i18n="survey.s3">中等</span></span>
+        <span>4 = <span data-i18n="survey.s4">比较多</span></span>
+        <span>5 = <span data-i18n="survey.s5">非常强烈</span></span>
+      </div>
+      <div id="pre-survey-items" class="survey-items"></div>
+      <p class="error-msg" id="pre-survey-error" data-i18n="survey.required">请完成所有题目</p>
+      <button class="btn btn-primary" onclick="submitPreSurvey()" data-i18n="survey.submit">提交</button>
+    </div>
+  </div>
+
+  <!-- Screen: Chat -->
+  <div id="screen-chat" class="screen">
+    <div class="chat-container">
+      <div class="chat-header">
+        <div class="chat-timer" id="chat-timer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="timer-display">00:00</span>
+        </div>
+        <h3 data-i18n="chat.title">与 AI 自由对话</h3>
+        <button class="btn btn-end" id="btn-end-chat" onclick="endChat()" disabled>
+          <span data-i18n="chat.end">结束对话</span>
+        </button>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-typing" id="chat-typing" style="display:none">
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+        <span data-i18n="chat.typing">AI 正在输入...</span>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="chat-input" data-i18n-placeholder="chat.placeholder" placeholder="输入您想说的话..." autocomplete="off">
+        <button class="btn btn-send" onclick="sendMessage()" id="btn-send">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen: Post-Survey -->
+  <div id="screen-post-survey" class="screen">
+    <div class="card card-wide animate-in">
+      <h2 data-i18n="survey.postTitle">情绪评估（对话后）</h2>
+      <p class="card-subtitle" data-i18n="survey.reference">
+        本量表改编自正性负性情绪量表 PANAS（Watson, Clark &amp; Tellegen, 1988）
+      </p>
+      <p class="survey-instructions" data-i18n="survey.instructions">
+        请根据您【此刻】的感受，评估以下每种情绪的强烈程度
+      </p>
+      <div class="scale-legend">
+        <span>1 = <span data-i18n="survey.s1">几乎没有</span></span>
+        <span>2 = <span data-i18n="survey.s2">比较少</span></span>
+        <span>3 = <span data-i18n="survey.s3">中等</span></span>
+        <span>4 = <span data-i18n="survey.s4">比较多</span></span>
+        <span>5 = <span data-i18n="survey.s5">非常强烈</span></span>
+      </div>
+      <div id="post-survey-items" class="survey-items"></div>
+      <p class="error-msg" id="post-survey-error" data-i18n="survey.required">请完成所有题目</p>
+      <button class="btn btn-primary" onclick="submitPostSurvey()" data-i18n="survey.submit">提交</button>
+    </div>
+  </div>
+
+  <!-- Screen: Feedback -->
+  <div id="screen-feedback" class="screen">
+    <div class="card card-wide animate-in">
+      <h2 data-i18n="feedback.title">体验反馈</h2>
+      <p class="card-subtitle" data-i18n="feedback.subtitle">在查看结果之前，我们想了解一下您的对话体验</p>
+      <div class="feedback-form">
+        <div class="feedback-item">
+          <label data-i18n="feedback.q1">与AI对话时，您整体感觉如何？</label>
+          <div class="feedback-options" id="fb-q1">
+            <label class="feedback-option"><input type="radio" name="fb-q1" value="very-natural"><span data-i18n="feedback.q1a">非常自然，像和朋友聊天</span></label>
+            <label class="feedback-option"><input type="radio" name="fb-q1" value="fairly-natural"><span data-i18n="feedback.q1b">比较自然，偶尔有些不同</span></label>
+            <label class="feedback-option"><input type="radio" name="fb-q1" value="neutral"><span data-i18n="feedback.q1c">一般，说不上好坏</span></label>
+            <label class="feedback-option"><input type="radio" name="fb-q1" value="slightly-awkward"><span data-i18n="feedback.q1d">有些不自然或尴尬</span></label>
+            <label class="feedback-option"><input type="radio" name="fb-q1" value="very-awkward"><span data-i18n="feedback.q1e">很尴尬，不太舒服</span></label>
+          </div>
+        </div>
+        <div class="feedback-item">
+          <label data-i18n="feedback.q2">您是否愿意在日常生活中与AI进行类似的对话？</label>
+          <div class="feedback-options" id="fb-q2">
+            <label class="feedback-option"><input type="radio" name="fb-q2" value="definitely"><span data-i18n="feedback.q2a">非常愿意</span></label>
+            <label class="feedback-option"><input type="radio" name="fb-q2" value="probably"><span data-i18n="feedback.q2b">比较愿意</span></label>
+            <label class="feedback-option"><input type="radio" name="fb-q2" value="unsure"><span data-i18n="feedback.q2c">不确定</span></label>
+            <label class="feedback-option"><input type="radio" name="fb-q2" value="probably-not"><span data-i18n="feedback.q2d">不太愿意</span></label>
+            <label class="feedback-option"><input type="radio" name="fb-q2" value="definitely-not"><span data-i18n="feedback.q2e">完全不愿意</span></label>
+          </div>
+        </div>
+        <div class="feedback-item">
+          <label data-i18n="feedback.q3">请分享您对这次对话体验的任何想法或感受（选填）</label>
+          <textarea id="fb-text" rows="4" data-i18n-placeholder="feedback.q3placeholder" placeholder="例如：对话中有没有让您印象深刻的瞬间？有什么感到意外或不适的地方？"></textarea>
+        </div>
+      </div>
+      <p class="error-msg" id="feedback-error" data-i18n="feedback.required">请至少完成前两道题</p>
+      <button class="btn btn-primary" onclick="submitFeedback()" data-i18n="feedback.submit">提交反馈，查看结果</button>
+    </div>
+  </div>
+
+  <!-- Screen: Results -->
+  <div id="screen-results" class="screen">
+    <div class="card card-wide animate-in">
+      <h2 data-i18n="results.title">研究结果</h2>
+      <p class="card-subtitle" data-i18n="results.thankYou">感谢您的参与！以下是您的情绪变化分析</p>
+      <div class="results-grid">
+        <div class="result-box result-pre">
+          <h3 data-i18n="results.preLabel">对话前</h3>
+          <div class="score-row">
+            <div class="score-item pa">
+              <span class="score-label" data-i18n="results.paLabel">积极情绪 (PA)</span>
+              <span class="score-value" id="pre-pa-score">-</span>
+              <span class="score-level" id="pre-pa-level"></span>
+            </div>
+            <div class="score-item na">
+              <span class="score-label" data-i18n="results.naLabel">消极情绪 (NA)</span>
+              <span class="score-value" id="pre-na-score">-</span>
+              <span class="score-level" id="pre-na-level"></span>
+            </div>
+          </div>
+        </div>
+        <div class="result-box result-post">
+          <h3 data-i18n="results.postLabel">对话后</h3>
+          <div class="score-row">
+            <div class="score-item pa">
+              <span class="score-label" data-i18n="results.paLabel">积极情绪 (PA)</span>
+              <span class="score-value" id="post-pa-score">-</span>
+              <span class="score-level" id="post-pa-level"></span>
+            </div>
+            <div class="score-item na">
+              <span class="score-label" data-i18n="results.naLabel">消极情绪 (NA)</span>
+              <span class="score-value" id="post-na-score">-</span>
+              <span class="score-level" id="post-na-level"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="chart-comparison"></canvas>
+      </div>
+      <div class="analysis-box" id="results-analysis"></div>
+      <div class="results-footer">
+        <p class="results-note" data-i18n="results.note">
+          以上结果仅供研究参考，不构成任何心理健康诊断。如您有心理健康方面的疑虑，请咨询专业人士。
+        </p>
+        <button class="btn btn-primary btn-lg" onclick="finishAndExit()" data-i18n="results.finish" style="margin-top:24px">完成并退出</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
