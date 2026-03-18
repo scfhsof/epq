@@ -527,16 +527,16 @@ function renderChart() {
         {
           label: t('results.preLabel'),
           data: [preScores.pa, preScores.na],
-          backgroundColor: ['rgba(52,211,153,0.15)', 'rgba(251,113,133,0.15)'],
-          borderColor: ['#34d399', '#fb7185'],
+          backgroundColor: ['rgba(106,158,106,0.15)', 'rgba(192,112,112,0.15)'],
+          borderColor: ['#6a9e6a', '#c07070'],
           borderWidth: 2,
           borderRadius: 8
         },
         {
           label: t('results.postLabel'),
           data: [postScores.pa, postScores.na],
-          backgroundColor: ['rgba(52,211,153,0.5)', 'rgba(251,113,133,0.5)'],
-          borderColor: ['#34d399', '#fb7185'],
+          backgroundColor: ['rgba(106,158,106,0.45)', 'rgba(192,112,112,0.45)'],
+          borderColor: ['#6a9e6a', '#c07070'],
           borderWidth: 2,
           borderRadius: 8
         }
@@ -545,18 +545,18 @@ function renderChart() {
     options: {
       responsive: true,
       plugins: {
-        legend: { position: 'top', labels: { color: '#a1a1aa', padding: 16, font: { weight: 600 } } }
+        legend: { position: 'top', labels: { color: '#6e6054', padding: 16, font: { weight: 600 } } }
       },
       scales: {
         y: {
           beginAtZero: true, max: 25,
-          title: { display: true, text: lang === 'zh' ? '得分' : 'Score', color: '#a1a1aa' },
-          ticks: { color: '#71717a' },
-          grid: { color: 'rgba(255,255,255,0.04)' }
+          title: { display: true, text: lang === 'zh' ? '得分' : 'Score', color: '#6e6054' },
+          ticks: { color: '#a89a8b' },
+          grid: { color: 'rgba(180,155,120,0.08)' }
         },
         x: {
-          ticks: { color: '#a1a1aa' },
-          grid: { color: 'rgba(255,255,255,0.04)' }
+          ticks: { color: '#6e6054' },
+          grid: { color: 'rgba(180,155,120,0.08)' }
         }
       }
     }
@@ -625,11 +625,11 @@ async function submitFeedback() {
 // ==================== Finish ====================
 function finishAndExit() {
   document.body.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:20px;background:#09090b;">
+    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:20px;background:#f6f1eb;">
       <div>
-        <div style="font-size:3rem;margin-bottom:16px;">🎉</div>
-        <h2 style="margin-bottom:12px;color:#fafafa;">${lang === 'zh' ? '感谢您的参与！' : 'Thank you for participating!'}</h2>
-        <p style="color:#71717a;">${lang === 'zh' ? '您已完成本次研究，现在可以安全关闭此页面。' : 'You have completed the study. You may now close this page.'}</p>
+        <div style="font-size:3rem;margin-bottom:16px;">☕</div>
+        <h2 style="margin-bottom:12px;color:#2d2418;font-family:'Lora',Georgia,serif;font-weight:400;">${lang === 'zh' ? '感谢您的参与！' : 'Thank you for participating!'}</h2>
+        <p style="color:#a89a8b;">${lang === 'zh' ? '您已完成本次研究，现在可以安全关闭此页面。' : 'You have completed the study. You may now close this page.'}</p>
       </div>
     </div>`;
 }
